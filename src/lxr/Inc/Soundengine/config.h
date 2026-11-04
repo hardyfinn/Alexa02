@@ -84,6 +84,12 @@
 
 //typedef  uint8_t bool;
 
+/* Alexa02 port: lxr_port.h defines these as empty on desktop targets,
+ * where the STM32 memory sections don't exist (and Mach-O rejects them) */
+#ifndef INDTCM
+#include "lxr_port.h"
+#endif
+#if 0 /* the firmware's definitions */
 // Helper to declare variable in CCM memory, pre-loaded from flash at startup
 #define INDTCM __attribute__ ((section(".dtcm")))
 
@@ -91,5 +97,6 @@
 #define INDTCMZ __attribute__ ((section(".dtcmz")))
 
 #define IN_ITCM_RAM __attribute__((section(".itcm_text")))
+#endif
 
 #endif /* CONFIG_H_ */
