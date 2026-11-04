@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alexa02 Guide</title>
+<style>
+:root{--bg:#1e2126;--panel:#2a2e35;--ink:#ece6d8;--soft:#9aa3ae;--hot:#f2a541;--teal:#57b5c9;--line:#3a3f47;--code:#15171a}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f5f2ea;--panel:#e9e6df;--ink:#1f2328;--soft:#5a626c;--hot:#b26a00;--teal:#1d7480;--line:#d2cdc3;--code:#fffdf8}}
+:root[data-theme="light"]{--bg:#f5f2ea;--panel:#e9e6df;--ink:#1f2328;--soft:#5a626c;--hot:#b26a00;--teal:#1d7480;--line:#d2cdc3;--code:#fffdf8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:32px 16px 80px}
+h1{font-size:2.2rem;letter-spacing:.1em;margin:.2em 0 0}
+h2{margin-top:2.4em;border-bottom:1px solid var(--line);padding-bottom:.3em}
+h3{margin-top:1.8em}
+.sub{color:var(--soft);margin-top:0}
+nav{background:var(--panel);border-radius:10px;padding:12px 18px;margin:24px 0}
+nav a{color:var(--ink);margin-right:14px;white-space:nowrap}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--panel)}
+.wrap{overflow-x:auto}
+code,kbd{background:var(--code);border:1px solid var(--line);border-radius:4px;padding:0 4px;font-size:.9em}
+.card{background:var(--panel);border-radius:10px;padding:16px 20px;margin:18px 0}
+.card h3{margin-top:0}
+ol.cables li{margin:4px 0}
+.note{border-left:3px solid var(--hot);padding:4px 14px;color:var(--soft)}
+.hot{color:var(--hot)}
+img.panel{width:100%;display:block;margin:16px auto;border-radius:6px}
+</style>
+</head>
+<body>
+<main>
+<h1>ALEXA02</h1>
+<p class="sub">Six drum voices from the open-source LXR engine, played from jacks, with two kits you can morph between. A VCV Rack module by Haer.</p>
+
+<nav>
+<a href="#install">Install</a><a href="#first">First sound</a><a href="#panel">Panel tour</a><a href="#edit">Editing</a>
+<a href="#pages">The pages</a><a href="#morph">Morphing</a><a href="#kits">Kits</a><a href="#mod">Mod matrix</a>
+<a href="#patches">Starter patches</a><a href="#notes">Good to know</a>
+</nav>
+
+<img class="panel" alt="Alexa02 panel" src="PANEL_PNG">
+
+<p>Alexa02 runs the actual sound engine from the Erica Synths LXR-02 firmware, which Erica released as open source in October 2026. The sequencer is gone. In its place every voice has its own trigger, accent, V/Oct and morph jacks, so you play it from whatever sequencer you like in Rack. The engine code is the firmware's own, so kits from the hardware (<code>.snd</code> files) load and sound the same.</p>
+
+<p class="note">Alexa02 is an unofficial port. It is not made or supported by Erica Synths. The engine code is GPL-3.0, and so is the module.</p>
+
+<h2 id="install">Install</h2>
+<ol>
+<li>Copy <code>Alexa02-2.0.0-mac-arm64.vcvplugin</code> into your Rack plugins folder: <code>~/Library/Application Support/Rack2/plugins-mac-arm64/</code>.</li>
+<li>Restart Rack. Alexa02 is under the brand <b>Haer</b>.</li>
+</ol>
+
+<h2 id="first">First sound</h2>
+<ol class="cables">
+<li>Add Alexa02 and any clock and sequencer, for example a clock into a trigger sequencer.</li>
+<li>Patch a sequencer gate into <b>TRIG</b> under DRUM 1. That's your kick.</li>
+<li>Patch <b>MIX L</b> and <b>MIX R</b> to your audio interface.</li>
+<li>No sequencer to hand? Press <b>PLAY</b>. It fires whichever voice is selected.</li>
+</ol>
+<p>A fresh module starts with the firmware's own init kit in A and in B. Right-click the panel and choose <b>Load factory kit into A</b> or <b>into B</b> to start from something more characterful.</p>
+
+<h2 id="panel">Panel tour</h2>
+<h3>The six voices</h3>
+<p>Each column is one voice: three drums (DRUM 1 to 3), SNARE, CYMBAL and HAT. Their engines differ:</p>
+<div class="wrap"><table>
+<tr><th>Voice</th><th>What it is</th></tr>
+<tr><td>DRUM 1, 2, 3</td><td>An oscillator with a pitch sweep, a second oscillator for FM or mixing, a click layer and a filter. Kicks, toms, zaps, bleeps.</td></tr>
+<tr><td>SNARE</td><td>An oscillator plus filtered noise, with a pitch sweep. The REPEAT setting turns it into a clap.</td></tr>
+<tr><td>CYMBAL</td><td>Three oscillators frequency-modulating each other. Metallic rides, crashes and bells.</td></tr>
+<tr><td>HAT</td><td>Three FM oscillators again, tuned for hats, with separate closed and open decays.</td></tr>
+</table></div>
+
+<div class="wrap"><table>
+<tr><th>Row</th><th>What it does</th></tr>
+<tr><td><b>SELECT</b></td><td>Picks the voice the edit knobs work on. It lights green when selected and flashes red when the voice plays.</td></tr>
+<tr><td><b>TRIG</b></td><td>Plays the voice on a rising edge. The HAT column's jack is the closed hat, and the jack in the <b>OPEN</b> box is the open hat. They choke each other, as on the hardware.</td></tr>
+<tr><td><b>ACC</b></td><td>Accent, read at the moment of the trigger. Unpatched or 0 V gives the hardware's normal level, and 5 V gives full accent. Turn on <b>ACC&gt;VOL</b> on the AMP page if you want accent to change the volume. Accent is also a mod source (see <a href="#mod">Mod matrix</a>).</td></tr>
+<tr><td><b>V/OCT</b></td><td>Pitch, 1 V per octave. When patched, the jack sets the pitch and TUNE becomes a transpose around it: with TUNE at 0, 0 V plays middle C. Unpatched, TUNE alone sets the pitch. Unlike the hardware, the pitch isn't rounded to semitones, so slides and microtones work.</td></tr>
+<tr><td><b>MORPH</b></td><td>Adds to the main MORPH position, for this voice only. +10 V moves it all the way from A to B. See <a href="#morph">Morphing</a>.</td></tr>
+<tr><td><b>OUT</b></td><td>The voice on its own. Patching it takes that voice out of the MIX outputs, so you can process it separately without hearing it twice.</td></tr>
+</table></div>
+
+<h3>Right side</h3>
+<div class="wrap"><table>
+<tr><th>Control</th><th>What it does</th></tr>
+<tr><td><b>PAGE</b> buttons</td><td>Choose what the six edit knobs control. FX and MOD have more than one part; press the same page again to step through them.</td></tr>
+<tr><td><b>EDIT A / B</b></td><td>Switches the knobs between editing kit A and kit B. The lit dot shows which one.</td></tr>
+<tr><td><b>MUTATE</b></td><td>Makes kit B a random variation of kit A, for the selected voice only. Press again for a different variation. Volume and output routing are left alone.</td></tr>
+<tr><td><b>A&gt;B</b></td><td>Copies the selected voice from kit A into kit B.</td></tr>
+<tr><td><b>PLAY</b></td><td>Fires the selected voice, for auditioning.</td></tr>
+<tr><td><b>MOD CV 1 to 5</b></td><td>Five CV inputs for the mod matrix, ±5 V. They do nothing until a MOD slot uses them.</td></tr>
+<tr><td><b>MORPH</b> knob, <b>CV</b> trimmer and jack</td><td>The morph position from kit A (left) to kit B (right). The trimmer is an attenuverter for the CV jack.</td></tr>
+<tr><td><b>MIX L / R</b></td><td>The stereo mix of every voice that isn't patched to its own OUT, after the FX.</td></tr>
+</table></div>
+
+<h2 id="edit">Editing</h2>
+<p>The screen shows the selected voice, the page and which kit you're editing. Under it are six values that match the six knobs below. Each value has a bar, and a thin mark on the bar shows where the same setting sits in the other kit, so you can see at a glance what will move when you morph.</p>
+<p>The bottom line of the screen shows both kit names and the morph position, with a dot for each voice where its own MORPH jack has moved it.</p>
+<p>Hover over a knob to see the full name of what it controls and its value, as with any Rack knob.</p>
+
+<h2 id="pages">The pages</h2>
+<div class="wrap"><table>
+<tr><th>Page</th><th>Knobs</th></tr>
+<tr><td>OSC</td><td>TUNE, FINE, WAVE (sine, triangle, saw, square, noise, PWM), PWM. The snare adds NOISE (colour) and MIX (tone against noise).</td></tr>
+<tr><td>AMP</td><td>ATTACK, DECAY, SLOPE (decay shape), ACC&gt;VOL. The snare and cymbal add REPEAT; the hat has separate CLOSED and OPEN decays.</td></tr>
+<tr><td>PITCH</td><td>DECAY, SLOPE and AMOUNT of the pitch sweep. Drums and snare only.</td></tr>
+<tr><td>FM</td><td>Drums: AMOUNT, RATIO, WAVE of the modulator, and MODE (FM or plain mix). Cymbal and hat: TUNE, FM amount and WAVE of oscillators 2 and 3.</td></tr>
+<tr><td>CLICK</td><td>A short sampled transient on top of the voice: TYPE (snap, click, tick, kick, rim, clap and more), LEVEL, PITCH.</td></tr>
+<tr><td>FILTER</td><td>CUTOFF, RESO, TYPE (LP, HP, BP, notch, peak and others), DRIVE.</td></tr>
+<tr><td>LFO</td><td>RATE, SYNC, DEPTH, WAVE, RESET (which voice restarts it), PHASE. Each voice has one LFO. It only does something once a MOD slot uses it.</td></tr>
+<tr><td>MIX</td><td>LEVEL, PAN, S.RATE (sample-rate reduction), DRIVE, ROUTE (to the mix or through the FX).</td></tr>
+<tr><td>FX</td><td>One effect for the whole kit: off, drive, ring mod, compressor or delay. Part 1 has TYPE, WET and four settings for that effect. Part 2 has the effect's shape, ratio or mode. A voice goes through the FX only when its ROUTE is set to FX.</td></tr>
+<tr><td>MOD</td><td>18 modulation slots, two per part, nine parts. See below.</td></tr>
+</table></div>
+
+<h2 id="morph">Morphing</h2>
+<p>Kit A and kit B are two complete sets of settings. The MORPH knob blends every setting from A to B, all at once, as the LXR-02 does. Halfway gives you settings halfway between the two kits. Settings that are a list of choices, like a wave or a filter type, step through the choices in between on the way, as on the hardware.</p>
+<p>The per-voice MORPH jacks add to the knob for one voice only. Two ways to use this:</p>
+<ul>
+<li>Patch a slow LFO into DRUM 1's MORPH to make only the kick drift between its A and B versions.</li>
+<li>Patch a random voltage, sampled on each hit, into the HAT's MORPH so every hat is slightly different.</li>
+</ul>
+<p>A few things don't morph, as on the hardware: the mod matrix, the voice routing and the FX type.</p>
+<div class="card">
+<h3>A quick way to get a B kit</h3>
+<p>Load a kit into A, then right-click and choose <b>Mutate all voices into B</b>, with A little, Some or A lot. Now the MORPH knob sweeps from your kit into a variation of it. For one voice only, select it and press MUTATE.</p>
+</div>
+
+<h2 id="kits">Kits</h2>
+<p>The right-click menu has six factory kits plus the firmware's init kit. Load any of them into A or B.</p>
+<div class="wrap"><table>
+<tr><th>Kit</th><th>Character</th></tr>
+<tr><td>Boom</td><td>Long sine kick and soft toms.</td></tr>
+<tr><td>Punch</td><td>Short kick with a click and drive, and a crisp snare.</td></tr>
+<tr><td>Electro</td><td>FM toms, a clap and metallic square-wave hats.</td></tr>
+<tr><td>Metal</td><td>FM clang and crushed noise, with a ring mod on drum 2 and the cymbal.</td></tr>
+<tr><td>Dub</td><td>Soft kick, rim snare and tom into a ping-pong delay.</td></tr>
+<tr><td>Crush</td><td>Low sample rate, driven filters and the whole kit through a compressor.</td></tr>
+</table></div>
+<p>Good pairs to morph between: Boom into Punch, Electro into Metal, Dub into Crush.</p>
+<p>Use <b>Load kit file (.snd)</b> to open kits saved on an LXR-02's card, and <b>Save kit A/B as .snd</b> to write them back. Kits are also saved with your patch.</p>
+
+<h2 id="mod">Mod matrix</h2>
+<p>The MOD page has 18 slots. Each one has a source (SRC), a destination (DEST) and an amount (AMT, which can be negative).</p>
+<ul>
+<li><b>Sources:</b> MOD CV 1 to 5, each voice's LFO, and each voice's accent.</li>
+<li><b>Destinations:</b> nearly any setting of any voice, the FX settings, and MORPH itself.</li>
+</ul>
+<p>Some examples:</p>
+<ul>
+<li>CV 1 to Dr1 PITCH AMOUNT gives a kick whose sweep follows a sequencer lane.</li>
+<li>Acc Snr to Snr FILTER CUTOFF makes accented snares brighter.</li>
+<li>LFO Hat to Hat AMP CLOSED makes the hat decay breathe.</li>
+<li>CV 2 to MORPH gives the matrix control of the kit morph. While a slot targets MORPH, it takes over from the knob.</li>
+</ul>
+
+<h2 id="patches">Starter patches</h2>
+<div class="card">
+<h3>Four on the floor, then morph</h3>
+<ol class="cables">
+<li>Clock at 124 BPM. Send quarters to DRUM 1 TRIG, beats 2 and 4 to SNARE TRIG, and off-beat 8ths to HAT TRIG.</li>
+<li>Load Boom into A and Punch into B.</li>
+<li>Patch an LFO at 1/16 bars, 0 to 10 V, into the main MORPH CV and turn the CV trimmer fully right.</li>
+</ol>
+<p>The groove travels between a round 808-style kit and a hard, clicky one over 16 bars.</p>
+</div>
+<div class="card">
+<h3>A melodic tom line</h3>
+<ol class="cables">
+<li>Load Electro into A.</li>
+<li>Patch a sequencer's gate into DRUM 3 TRIG and its pitch into DRUM 3 V/OCT.</li>
+<li>Patch DRUM 3 OUT through a reverb on its own.</li>
+</ol>
+</div>
+<div class="card">
+<h3>Accents that change the sound</h3>
+<ol class="cables">
+<li>Patch an accent gate from your sequencer into SNARE ACC.</li>
+<li>On the MOD page, set slot 1 to SRC Acc Snr, DEST Snr FILTER CUTOFF, and AMT +30.</li>
+<li>On the snare's AMP page, set ACC&gt;VOL to on.</li>
+</ol>
+</div>
+
+<h2 id="notes">Good to know</h2>
+<ul>
+<li>The engine runs at the hardware's rate of 44.14 kHz, in blocks of 64 samples. A trigger plays at the start of the next block, up to about 1.5 ms later, just like on the LXR-02.</li>
+<li>The LFOs and accents work only through the mod matrix. That's how the Eurorack firmware this port comes from works.</li>
+<li>Kits from the LXR desktop firmware load, but they lose their old LFO and velocity routings. Rebuild those in the MOD page.</li>
+<li>Several Alexa02s in one patch are fine. They share one engine and swap their state each block, which costs a little CPU per extra module.</li>
+<li>The source code is at <a href="https://github.com/hardyfinn/alexa02">github.com/hardyfinn/alexa02</a>.</li>
+</ul>
+</main>
+</body>
+</html>

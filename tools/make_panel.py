@@ -106,9 +106,6 @@ label("six drum voices from the open LXR engine", 33.5, 7.2, 2.2, fill=SOFT, anc
 # display frame (the display itself is drawn by the module)
 rect(DISP[0] - 0.8, DISP[1] - 0.8, DISP[2] + 1.6, DISP[3] + 1.6, OUTBOX, r=1.6)
 
-# edit knobs: small numbers under them
-for k, x in enumerate(EDIT_X):
-    label(str(k + 1), x, EDIT_Y + 7.6, 2.0)
 
 # voice columns
 rect(15.0, 59.5, 98.0, 3.2, BG, r=0)
@@ -131,7 +128,7 @@ rect(15.6, ROW_OUT - 4.9, 82.8, 9.8, OUTBOX, r=1.4)
 
 # right section: pages
 label("PAGE", 116.5, 13.0, 2.2, fill=INK, font=FONT_BOLD, anchor="start")
-label("press again for the next part of a page", 210.0, 13.0, 1.8, anchor="end")
+label("press a page again for its next part", 210.0, 39.9, 1.8, anchor="end")
 for i, name in enumerate(PAGE_NAMES):
     x = PAGE_X[i % 5]
     y = PAGE_Y[i // 5]
