@@ -1,0 +1,23 @@
+{
+  "slug": "Alexa02",
+  "name": "Alexa02",
+  "version": "2.0.0",
+  "license": "GPL-3.0-only",
+  "brand": "Haer",
+  "author": "Haer",
+  "authorEmail": "",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "https://github.com/hardyfinn/Alexa02",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "Alexa02",
+      "name": "Alexa02",
+      "description": "Six synthesized drum voices from the open-source LXR drum machine firmware, played from trigger jacks, with two kits and morphing between them",
+      "tags": ["Drum", "Synth voice", "Polyphonic"]
+    }
+  ]
+}
