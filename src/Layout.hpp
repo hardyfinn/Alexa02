@@ -3,17 +3,17 @@
 
 namespace layout {
 static const float DISP_X = 6.0f, DISP_Y = 11.0f, DISP_W = 108.0f, DISP_H = 34.0f;
-static const float EDIT_Y = 54.0f;
+static const float EDIT_Y = 53.0f;
 static const float EDIT_X[6] = {15.00f, 33.00f, 51.00f, 69.00f, 87.00f, 105.00f};
-static const float VOICE_X[6] = {22.00f, 36.00f, 50.00f, 64.00f, 78.00f, 92.00f};
-static const float OH_X = 106.0f;
-static const float ROW_SEL = 67.0f, ROW_TRIG = 78.5f, ROW_ACC = 89.0f, ROW_VOCT = 99.5f, ROW_MORPH = 110.0f, ROW_OUT = 120.5f;
-static const float PAGE_X[5] = {131.00f, 148.00f, 165.00f, 182.00f, 199.00f};
+static const float VOICE_X[6] = {23.00f, 38.00f, 53.00f, 68.00f, 83.00f, 98.00f};
+static const float OH_X = 113.5f;
+static const float ROW_SEL = 67.6f, ROW_TRIG = 79.5f, ROW_ACC = 89.8f, ROW_VOCT = 100.1f, ROW_MORPH = 110.4f, ROW_OUT = 120.7f;
+static const float PAGE_X[5] = {142.00f, 159.00f, 176.00f, 193.00f, 210.00f};
 static const float PAGE_Y[2] = {19.00f, 34.00f};
-static const float KIT_Y = 52.5f, EDITAB_X = 131.0f, RND_X = 148.0f, COPY_X = 165.0f, PLAY_X = 182.0f;
-static const float CV_X = 128.0f;
-static const float MORPH_KNOB_X = 153.0f, MORPH_KNOB_Y = 90.0f;
-static const float MORPH_ATT_X = 176.0f, MORPH_ATT_Y = 84.0f;
-static const float MORPH_CV_X = 176.0f, MORPH_CV_Y = 97.5f;
-static const float OUT_L_X = 199.0f, OUT_L_Y = 110.0f, OUT_R_X = 199.0f, OUT_R_Y = 120.5f;
+static const float KIT_Y = 52.5f, EDITAB_X = 142.0f, RND_X = 159.0f, COPY_X = 176.0f, PLAY_X = 193.0f;
+static const float CV_X = 139.0f;
+static const float MORPH_KNOB_X = 164.0f, MORPH_KNOB_Y = 90.0f;
+static const float MORPH_ATT_X = 187.0f, MORPH_ATT_Y = 84.0f;
+static const float MORPH_CV_X = 187.0f, MORPH_CV_Y = 97.5f;
+static const float OUT_L_X = 210.0f, OUT_L_Y = 110.4f, OUT_R_X = 210.0f, OUT_R_Y = 120.7f;
 } // namespace layout

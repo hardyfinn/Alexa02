@@ -15,7 +15,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_BOLD = os.environ.get("PANEL_FONT_BOLD", "/usr/share/fonts/opentype/inter/Inter-Bold.otf")
 FONT_MED = os.environ.get("PANEL_FONT_MED", "/usr/share/fonts/opentype/inter/Inter-Medium.otf")
 
-HP = 42
+HP = 44
 W, H = HP * 5.08, 128.5
 
 BG = "#24272C"
@@ -28,26 +28,26 @@ VOICE_COLS = ["#E86A4A", "#E8A04A", "#D9C64A", "#7BC47F", "#57B5C9", "#9C8CE0"]
 
 # ---------------------------------------------------------------- layout
 DISP = (6.0, 11.0, 108.0, 34.0)                       # x, y, w, h
-EDIT_Y = 54.0
+EDIT_Y = 53.0
 EDIT_X = [DISP[0] + DISP[2] / 12.0 * (2 * k + 1) for k in range(6)]
 
-VOICE_X = [22.0, 36.0, 50.0, 64.0, 78.0, 92.0]
-OH_X = 106.0
-ROW_SEL, ROW_TRIG, ROW_ACC, ROW_VOCT, ROW_MORPH, ROW_OUT = 67.0, 78.5, 89.0, 99.5, 110.0, 120.5
+VOICE_X = [23.0, 38.0, 53.0, 68.0, 83.0, 98.0]
+OH_X = 113.5
+ROW_SEL, ROW_TRIG, ROW_ACC, ROW_VOCT, ROW_MORPH, ROW_OUT = 67.6, 79.5, 89.8, 100.1, 110.4, 120.7
 
-PAGE_X = [131.0, 148.0, 165.0, 182.0, 199.0]
+PAGE_X = [142.0, 159.0, 176.0, 193.0, 210.0]
 PAGE_Y = [19.0, 34.0]
 PAGE_NAMES = ["OSC", "AMP", "PITCH", "FM", "CLICK", "FILTER", "LFO", "MIX", "FX", "MOD"]
 
 KIT_Y = 52.5
-EDITAB_X, RND_X, COPY_X, PLAY_X = 131.0, 148.0, 165.0, 182.0
+EDITAB_X, RND_X, COPY_X, PLAY_X = 142.0, 159.0, 176.0, 193.0
 
-CV_X = 128.0
-MORPH_KNOB = (153.0, 90.0)
-MORPH_ATT = (176.0, 84.0)
-MORPH_CV = (176.0, 97.5)
-OUT_L = (199.0, ROW_MORPH)
-OUT_R = (199.0, ROW_OUT)
+CV_X = 139.0
+MORPH_KNOB = (164.0, 90.0)
+MORPH_ATT = (187.0, 84.0)
+MORPH_CV = (187.0, 97.5)
+OUT_L = (210.0, ROW_MORPH)
+OUT_R = (210.0, ROW_OUT)
 
 VOICE_NAMES = ["DRUM 1", "DRUM 2", "DRUM 3", "SNARE", "CYMBAL", "HAT"]
 
@@ -101,67 +101,67 @@ rect(0, 0, W, H, BG, r=0)
 
 # title
 label("ALEXA02", 6.0, 7.4, 4.6, fill=INK, font=FONT_BOLD, anchor="start")
-label("six drum voices from the open LXR engine", 33.5, 7.2, 2.2, fill=SOFT, anchor="start")
+label("six drum voices from the open LXR engine", 33.5, 7.2, 2.6, fill=SOFT, anchor="start")
 
 # display frame (the display itself is drawn by the module)
 rect(DISP[0] - 0.8, DISP[1] - 0.8, DISP[2] + 1.6, DISP[3] + 1.6, OUTBOX, r=1.6)
 
 
 # voice columns
-rect(15.0, 59.5, 98.0, 3.2, BG, r=0)
+rect(VOICE_X[0] - 6.7, 59.6, VOICE_X[5] - VOICE_X[0] + 13.4, 3.6, BG, r=0)
 for v, x in enumerate(VOICE_X):
     c = VOICE_COLS[v]
-    rect(x - 6.2, 59.0, 12.4, 67.0, BG2, r=1.6)
-    add(f'<rect x="{x-6.2:.2f}" y="59.0" width="12.4" height="1.1" rx="0.5" fill="{c}"/>')
-    label(VOICE_NAMES[v], x, 62.6, 2.2, fill=INK, font=FONT_BOLD)
-rect(OH_X - 6.2, ROW_TRIG - 6.6, 12.4, 13.0, BG2, r=1.6)
-label("OPEN", OH_X, ROW_TRIG - 4.4, 2.0, fill=INK, font=FONT_BOLD)
+    rect(x - 6.7, 58.6, 13.4, 67.6, BG2, r=1.6)
+    add(f'<rect x="{x-6.7:.2f}" y="58.6" width="13.4" height="1.1" rx="0.5" fill="{c}"/>')
+    label(VOICE_NAMES[v], x, 62.9, 2.9, fill=INK, font=FONT_BOLD)
+rect(OH_X - 6.7, ROW_TRIG - 7.6, 13.4, 14.0, BG2, r=1.6)
+label("OPEN", OH_X - 1.3, ROW_TRIG - 4.6, 2.9, fill=INK, font=FONT_BOLD)
 
 # row labels
 for name, y in [("SELECT", ROW_SEL), ("TRIG", ROW_TRIG), ("ACC", ROW_ACC), ("V/OCT", ROW_VOCT),
                 ("MORPH", ROW_MORPH), ("OUT", ROW_OUT)]:
-    label(name, 14.6, y + 0.8, 2.0, anchor="end")
-label("CLOSED", VOICE_X[5], ROW_TRIG - 4.4, 1.8, fill=SOFT)
+    label(name, VOICE_X[0] - 7.3, y + 1.0, 2.9, anchor="end")
+label("CLOSED", VOICE_X[5], ROW_TRIG - 4.5, 2.2, fill=SOFT)
 
 # individual outputs box
-rect(15.6, ROW_OUT - 4.9, 82.8, 9.8, OUTBOX, r=1.4)
+rect(VOICE_X[0] - 6.4, ROW_OUT - 5.0, VOICE_X[5] - VOICE_X[0] + 12.8, 10.0, OUTBOX, r=1.4)
 
 # right section: pages
-label("PAGE", 116.5, 13.0, 2.2, fill=INK, font=FONT_BOLD, anchor="start")
-label("press a page again for its next part", 210.0, 39.9, 1.8, anchor="end")
+label("PAGE", 123.5, 13.4, 2.9, fill=INK, font=FONT_BOLD, anchor="start")
+label("press a page again for its next part", W - 4.0, 40.6, 2.1, anchor="end")
 for i, name in enumerate(PAGE_NAMES):
     x = PAGE_X[i % 5]
     y = PAGE_Y[i // 5]
-    label(name, x, y - 4.6, 2.1, fill=INK)
-line(117, 41.5, 210, 41.5, color="#3A3F47", w=0.4)
+    label(name, x, y - 4.6, 2.9, fill=INK)
+line(122, 42.3, W - 4.0, 42.3, color="#3A3F47", w=0.4)
 
 # kit buttons
 for name, x in [("EDIT", EDITAB_X), ("MUTATE", RND_X), ("A>B", COPY_X), ("PLAY", PLAY_X)]:
-    label(name, x, KIT_Y - 5.0, 2.1, fill=INK)
-label("A", EDITAB_X - 4.6, KIT_Y + 6.3, 1.9, fill=SOFT)
-label("B", EDITAB_X + 4.6, KIT_Y + 6.3, 1.9, fill=SOFT)
-label("kit B from A", RND_X, KIT_Y + 6.3, 1.7)
-label("this voice", COPY_X, KIT_Y + 6.3, 1.7)
-label("this voice", PLAY_X, KIT_Y + 6.3, 1.7)
-line(117, 63.0, 210, 63.0, color="#3A3F47", w=0.4)
+    label(name, x, KIT_Y - 5.0, 2.9, fill=INK)
+label("A", EDITAB_X - 4.6, KIT_Y + 6.6, 2.4, fill=SOFT)
+label("B", EDITAB_X + 4.6, KIT_Y + 6.6, 2.4, fill=SOFT)
+label("kit B from A", RND_X, KIT_Y + 6.6, 2.1)
+label("this voice", COPY_X, KIT_Y + 6.6, 2.1)
+label("this voice", PLAY_X, KIT_Y + 6.6, 2.1)
+line(122, 63.4, W - 4.0, 63.4, color="#3A3F47", w=0.4)
 
 # mod CV column
-label("MOD CV", CV_X, ROW_TRIG - 6.2, 2.1, fill=INK, font=FONT_BOLD)
+label("MOD CV", CV_X, ROW_TRIG - 6.6, 2.9, fill=INK, font=FONT_BOLD)
 for i, y in enumerate([ROW_TRIG, ROW_ACC, ROW_VOCT, ROW_MORPH, ROW_OUT]):
-    label(str(i + 1), CV_X - 5.6, y + 0.8, 2.0, anchor="end")
+    label(str(i + 1), CV_X - 5.4, y + 1.0, 2.9, anchor="end")
 
 # morph
 label("MORPH", MORPH_KNOB[0], 74.0, 3.2, fill=ACCENT, font=FONT_BOLD)
-label("A", MORPH_KNOB[0] - 9.5, MORPH_KNOB[1] + 9.2, 2.6, fill=INK, font=FONT_BOLD)
-label("B", MORPH_KNOB[0] + 9.5, MORPH_KNOB[1] + 9.2, 2.6, fill=INK, font=FONT_BOLD)
-label("CV", MORPH_ATT[0], MORPH_ATT[1] - 4.6, 2.0)
-label("each voice adds its MORPH jack", MORPH_KNOB[0] + 3, 108.0, 1.7, anchor="middle")
+label("A", MORPH_KNOB[0] - 9.5, MORPH_KNOB[1] + 9.4, 2.9, fill=INK, font=FONT_BOLD)
+label("B", MORPH_KNOB[0] + 9.5, MORPH_KNOB[1] + 9.4, 2.9, fill=INK, font=FONT_BOLD)
+label("CV", MORPH_ATT[0], MORPH_ATT[1] - 4.4, 2.9)
+label("each voice adds its MORPH jack", MORPH_KNOB[0] + 4, 108.6, 2.1, anchor="middle")
 
 # mix outs
-rect(OUT_L[0] - 6.0, OUT_L[1] - 9.4, 12.0, 25.5, OUTBOX, r=1.4)
-label("MIX", OUT_L[0], OUT_L[1] - 5.6, 2.2, fill=INK, font=FONT_BOLD)
-label("L", OUT_L[0] - 4.9, OUT_L[1] + 0.8, 1.9, anchor="end")
-label("R", OUT_R[0] - 4.9, OUT_R[1] + 0.8, 1.9, anchor="end")
+rect(OUT_L[0] - 9.0, OUT_L[1] - 10.0, 15.0, 26.1, OUTBOX, r=1.4)
+label("MIX", OUT_L[0] - 1.5, OUT_L[1] - 5.6, 2.9, fill=INK, font=FONT_BOLD)
+label("L", OUT_L[0] - 4.7, OUT_L[1] + 1.0, 2.9, anchor="end")
+label("R", OUT_R[0] - 4.7, OUT_R[1] + 1.0, 2.9, anchor="end")
 
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}mm" height="{H}mm" viewBox="0 0 {W} {H}">'
        + "".join(parts) + "</svg>\n")
