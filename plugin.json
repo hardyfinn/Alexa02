@@ -1,7 +1,7 @@
 {
   "slug": "Alexa02",
   "name": "Alexa02",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "license": "GPL-3.0-only",
   "brand": "Haer",
   "author": "Haer",
@@ -17,7 +17,20 @@
       "slug": "Alexa02",
       "name": "Alexa02",
       "description": "Six synthesized drum voices from the open-source LXR drum machine firmware, played from trigger jacks, with two kits and morphing between them",
-      "tags": ["Drum", "Synth voice", "Polyphonic"]
+      "tags": [
+        "Drum",
+        "Synth voice",
+        "Polyphonic"
+      ]
+    },
+    {
+      "slug": "Alexa01",
+      "name": "Alexa01",
+      "description": "One synthesized drum voice from the open-source LXR firmware (drum, snare, cymbal or hat) with every setting on a knob, six memories and morphing between them",
+      "tags": [
+        "Drum",
+        "Synth voice"
+      ]
     }
   ]
 }

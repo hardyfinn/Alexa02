@@ -5,21 +5,14 @@
 #include "Pages.hpp"
 #include "Kits.hpp"
 #include "FactoryKits.hpp"
+#include "Engine.hpp"
 #include <osdialog.h>
 #include <mutex>
 #include <random>
 
 using namespace lxr;
 
-// ---------------------------------------------------------------------------
-// The engine keeps its state in global variables, as on the hardware. Several
-// modules share it by swapping their own copy in and out (only when a
-// different module than last time needs it), under a lock.
-struct Alexa02;
-static std::mutex gEngineMutex;
-static Alexa02* gEngineOwner = nullptr;
-
-struct Alexa02 : Module {
+struct Alexa02 : Module, EngineUser {
 	enum ParamId {
 		ENUMS(EDIT_PARAM, 6),
 		ENUMS(VOICE_PARAM, 6),
@@ -69,9 +62,7 @@ struct Alexa02 : Module {
 	int knobParam[6] = {-1, -1, -1, -1, -1, -1};
 	bool syncKnobs = true;
 
-	// ---- engine
-	std::vector<uint8_t> engineState;
-	bool engineReady = false;
+	// ---- engine output
 	int16_t vbuf[6][ALEXA_BLOCK];
 	int16_t lbuf[ALEXA_BLOCK], rbuf[ALEXA_BLOCK];
 	int bufPos = ALEXA_BLOCK;
@@ -144,29 +135,12 @@ struct Alexa02 : Module {
 		configOutput(L_OUTPUT, "Mix left");
 		configOutput(R_OUTPUT, "Mix right");
 
-		engineState.resize(alexa_stateSize());
 		loadFactory(kitA, 0);
 		kitB = kitA;
 		kitB.setName("Init B");
 		for (int i = 0; i < KIT_SIZE; i++) sent[i] = -1;
 
-		std::lock_guard<std::mutex> lock(gEngineMutex);
-		acquireEngine();
-		alexa_engineInit();
-		engineReady = true;
-	}
-
-	~Alexa02() {
-		std::lock_guard<std::mutex> lock(gEngineMutex);
-		if (gEngineOwner == this) gEngineOwner = nullptr;
-	}
-
-	// call with gEngineMutex held
-	void acquireEngine() {
-		if (gEngineOwner == this) return;
-		if (gEngineOwner) alexa_stateSave(gEngineOwner->engineState.data());
-		if (engineReady) alexa_stateLoad(engineState.data());
-		gEngineOwner = this;
+		initEngine();
 	}
 
 	// ------------------------------------------------------------ kits
@@ -194,7 +168,7 @@ struct Alexa02 : Module {
 
 	// ------------------------------------------------------------ pages
 	PageDef currentPage() {
-		return getPage(voice, page, part, kitA.p[PAR_FX_TYPE]);
+		return getPage(voice, page, part, editKit().p[PAR_FX_TYPE]);
 	}
 
 	std::string itemLongName(int i) {
@@ -379,9 +353,9 @@ struct Alexa02 : Module {
 		for (int v = 0; v < 6; v++) {
 			const float mv = clamp(global + inputs[VMORPH_INPUT + v].getVoltage() / 10.f, 0.f, 1.f);
 			morphShown[v] = mv;
-			m8[v] = (uint8_t)std::round(mv * 255.f);
+			m8[v] = morphByte(mv);
 		}
-		m8[6] = (uint8_t)std::round(global * 255.f);
+		m8[6] = morphByte(global);
 
 		std::lock_guard<std::mutex> lock(gEngineMutex);
 		acquireEngine();
@@ -389,13 +363,8 @@ struct Alexa02 : Module {
 		// send changed parameters (kit A morphed towards kit B)
 		const VoicePages& vp = voicePages();
 		for (int p = 0; p < KIT_SIZE; p++) {
-			uint8_t val;
-			if (p >= PAR_CV_DEST_1 || (p >= PAR_AUDIO_OUT1 && p <= PAR_AUDIO_OUT6) || p == PAR_FX_TYPE)
-				val = kitA.p[p];  // not morphed, as on the hardware
-			else {
-				const int v = vp.paramVoice[p];
-				val = interpolate(kitA.p[p], kitB.p[p], v >= 0 ? m8[v] : m8[6]);
-			}
+			const int v = vp.paramVoice[p];
+			const uint8_t val = morphParam(p, kitA.p[p], kitB.p[p], v >= 0 ? m8[v] : m8[6]);
 			if (sent[p] != val) {
 				alexa_setParam((uint16_t)p, val);
 				sent[p] = val;
@@ -505,10 +474,61 @@ struct Alexa02 : Module {
 };
 
 // ---------------------------------------------------------------------------
+// the kit menu: opens when the screen is clicked
+static void buildKitMenu(Menu* menu, Alexa02* m) {
+	menu->addChild(createMenuLabel("Kits"));
+
+	for (int side = 0; side < 2; side++) {
+		const bool b = side == 1;
+		menu->addChild(createSubmenuItem(b ? "Load factory kit into B" : "Load factory kit into A", "", [=](Menu* sub) {
+			for (int i = 0; i < NUM_FACTORY_KITS; i++) {
+				sub->addChild(createMenuItem(FACTORY_KITS[i].title, "", [=]() {
+					m->request([=]() {
+						Alexa02::loadFactory(b ? m->kitB : m->kitA, i);
+						m->resendAll();
+					});
+				}));
+			}
+		}));
+	}
+	menu->addChild(createMenuItem("Load kit file (.snd) into A...", "", [=]() { m->loadKitFile(false); }));
+	menu->addChild(createMenuItem("Load kit file (.snd) into B...", "", [=]() { m->loadKitFile(true); }));
+	menu->addChild(createMenuItem("Save kit A as .snd...", "", [=]() { m->saveKitFile(false); }));
+	menu->addChild(createMenuItem("Save kit B as .snd...", "", [=]() { m->saveKitFile(true); }));
+
+	menu->addChild(new MenuSeparator);
+	menu->addChild(createMenuItem("Copy kit A to B", "", [=]() { m->request([=]() { m->kitB = m->kitA; m->resendAll(); }); }));
+	menu->addChild(createMenuItem("Copy kit B to A", "", [=]() { m->request([=]() { m->kitA = m->kitB; m->resendAll(); }); }));
+	menu->addChild(createMenuItem("Swap kits A and B", "", [=]() { m->request([=]() { std::swap(m->kitA, m->kitB); m->resendAll(); }); }));
+	menu->addChild(createSubmenuItem("Mutate all voices into B", "", [=](Menu* sub) {
+		static const char* names[3] = {"A little", "Some", "A lot"};
+		static const float amounts[3] = {0.4f, 1.f, 2.f};
+		for (int i = 0; i < 3; i++)
+			sub->addChild(createMenuItem(names[i], "", [=]() {
+				m->request([=]() { for (int v = 0; v < 6; v++) m->mutateVoice(v, amounts[i]); });
+			}));
+	}));
+}
+
+
+// ---------------------------------------------------------------------------
 // the display
 struct AlexaDisplay : Widget {
 	Alexa02* module = nullptr;
 	std::string fontPath = asset::system("res/fonts/ShareTechMono-Regular.ttf");
+	bool hover = false;
+
+	void onButton(const ButtonEvent& e) override {
+		if (e.action == GLFW_PRESS && (e.button == GLFW_MOUSE_BUTTON_LEFT || e.button == GLFW_MOUSE_BUTTON_RIGHT) && module) {
+			Menu* menu = createMenu();
+			buildKitMenu(menu, module);
+			e.consume(this);
+			return;
+		}
+		Widget::onButton(e);
+	}
+	void onEnter(const EnterEvent& e) override { hover = true; }
+	void onLeave(const LeaveEvent& e) override { hover = false; }
 
 	void drawLayer(const DrawArgs& args, int layer) override {
 		if (layer != 1) return;
@@ -533,6 +553,17 @@ struct AlexaDisplay : Widget {
 			return;
 		}
 		Alexa02* m = module;
+		if (hover) {
+			nvgBeginPath(args.vg);
+			nvgRoundedRect(args.vg, 1.f, 1.f, w - 2.f, h - 2.f, 3.f);
+			nvgStrokeColor(args.vg, nvgRGBA(0xF2, 0xA5, 0x41, 0x90));
+			nvgStrokeWidth(args.vg, 1.f);
+			nvgStroke(args.vg);
+			nvgFontSize(args.vg, 9.f);
+			nvgFillColor(args.vg, amber);
+			nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
+			nvgText(args.vg, w / 2, h - 13.f, "click for the kit menu", nullptr);
+		}
 		const int voice = m->voice, page = m->page, part = m->part;
 		PageDef d = m->currentPage();
 		Kit& kit = m->editKit();
@@ -700,44 +731,6 @@ struct Alexa02Widget : ModuleWidget {
 
 		addOutput(createOutputCentered<ThemedPJ301MPort>(mm2px(Vec(OUT_L_X, OUT_L_Y)), module, Alexa02::L_OUTPUT));
 		addOutput(createOutputCentered<ThemedPJ301MPort>(mm2px(Vec(OUT_R_X, OUT_R_Y)), module, Alexa02::R_OUTPUT));
-	}
-
-	void appendContextMenu(Menu* menu) override {
-		Alexa02* m = dynamic_cast<Alexa02*>(module);
-		if (!m) return;
-		menu->addChild(new MenuSeparator);
-		menu->addChild(createMenuLabel("Kits"));
-
-		for (int side = 0; side < 2; side++) {
-			const bool b = side == 1;
-			menu->addChild(createSubmenuItem(b ? "Load factory kit into B" : "Load factory kit into A", "", [=](Menu* sub) {
-				for (int i = 0; i < NUM_FACTORY_KITS; i++) {
-					sub->addChild(createMenuItem(FACTORY_KITS[i].title, "", [=]() {
-						m->request([=]() {
-							Alexa02::loadFactory(b ? m->kitB : m->kitA, i);
-							m->resendAll();
-						});
-					}));
-				}
-			}));
-		}
-		menu->addChild(createMenuItem("Load kit file (.snd) into A...", "", [=]() { m->loadKitFile(false); }));
-		menu->addChild(createMenuItem("Load kit file (.snd) into B...", "", [=]() { m->loadKitFile(true); }));
-		menu->addChild(createMenuItem("Save kit A as .snd...", "", [=]() { m->saveKitFile(false); }));
-		menu->addChild(createMenuItem("Save kit B as .snd...", "", [=]() { m->saveKitFile(true); }));
-
-		menu->addChild(new MenuSeparator);
-		menu->addChild(createMenuItem("Copy kit A to B", "", [=]() { m->request([=]() { m->kitB = m->kitA; m->resendAll(); }); }));
-		menu->addChild(createMenuItem("Copy kit B to A", "", [=]() { m->request([=]() { m->kitA = m->kitB; m->resendAll(); }); }));
-		menu->addChild(createMenuItem("Swap kits A and B", "", [=]() { m->request([=]() { std::swap(m->kitA, m->kitB); m->resendAll(); }); }));
-		menu->addChild(createSubmenuItem("Mutate all voices into B", "", [=](Menu* sub) {
-			static const char* names[3] = {"A little", "Some", "A lot"};
-			static const float amounts[3] = {0.4f, 1.f, 2.f};
-			for (int i = 0; i < 3; i++)
-				sub->addChild(createMenuItem(names[i], "", [=]() {
-					m->request([=]() { for (int v = 0; v < 6; v++) m->mutateVoice(v, amounts[i]); });
-				}));
-		}));
 	}
 };
 

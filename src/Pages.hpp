@@ -4,6 +4,8 @@
 #pragma once
 #include <string>
 #include <cstdio>
+#include <cmath>
+#include <algorithm>
 #include "ParamMeta.hpp"
 #include "alexa_engine.h"
 
@@ -290,11 +292,30 @@ inline std::string valueText(int p, int value) {
 	}
 }
 
-// the firmware's morph interpolation (presetManager.c)
+// the firmware's morph interpolation (presetManager.c). Alexa02: x = 255 is
+// exactly b (the firmware's maths only reaches 255/256 of the way).
 inline uint8_t interpolate(uint8_t a, uint8_t b, uint8_t x) {
+	if (x >= 255) return b;
 	const uint16_t fixedPointValue = (uint16_t)(((a * 256) + (b - a) * x));
 	const uint8_t result = (uint8_t)(fixedPointValue / 256);
 	return (uint8_t)((fixedPointValue & 0xff) < 0x7f ? result : result + 1);
+}
+
+// morph position 0..1 as the engine's 0..255
+inline uint8_t morphByte(float m) {
+	return (uint8_t)std::lround(std::min(1.f, std::max(0.f, m)) * 255.f);
+}
+
+// Settings that can't be blended: the mod matrix, each voice's routing and the
+// FX type. On the hardware they always come from kit A; here they switch to
+// kit B once the morph reaches 99%, so a fully morphed kit is all kit B.
+static const uint8_t MORPH_SWITCH = 252;  // 99% of 255
+inline bool isSwitchedParam(int p) {
+	return p >= PAR_CV_DEST_1 || (p >= PAR_AUDIO_OUT1 && p <= PAR_AUDIO_OUT6) || p == PAR_FX_TYPE;
+}
+inline uint8_t morphParam(int p, uint8_t a, uint8_t b, uint8_t x) {
+	if (isSwitchedParam(p)) return x >= MORPH_SWITCH ? b : a;
+	return interpolate(a, b, x);
 }
 
 } // namespace lxr

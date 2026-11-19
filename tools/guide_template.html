@@ -33,12 +33,12 @@ img.panel{width:100%;display:block;margin:16px auto;border-radius:6px}
 <body>
 <main>
 <h1>ALEXA02</h1>
-<p class="sub">Six drum voices from the open-source LXR engine, played from jacks, with two kits you can morph between. A VCV Rack module by Haer.</p>
+<p class="sub">Six drum voices from the open-source LXR engine, played from jacks, with two kits you can morph between. Plus Alexa01, a single voice with every setting on a knob. VCV Rack modules by Haer.</p>
 
 <nav>
 <a href="#install">Install</a><a href="#first">First sound</a><a href="#panel">Panel tour</a><a href="#edit">Editing</a>
 <a href="#pages">The pages</a><a href="#morph">Morphing</a><a href="#kits">Kits</a><a href="#mod">Mod matrix</a>
-<a href="#patches">Starter patches</a><a href="#notes">Good to know</a>
+<a href="#alexa01">Alexa01</a><a href="#patches">Starter patches</a><a href="#notes">Good to know</a>
 </nav>
 
 <img class="panel" alt="Alexa02 panel" src="PANEL_PNG">
@@ -49,8 +49,8 @@ img.panel{width:100%;display:block;margin:16px auto;border-radius:6px}
 
 <h2 id="install">Install</h2>
 <ol>
-<li>Copy <code>Alexa02-2.0.0-mac-arm64.vcvplugin</code> into your Rack plugins folder: <code>~/Library/Application Support/Rack2/plugins-mac-arm64/</code>.</li>
-<li>Restart Rack. Alexa02 is under the brand <b>Haer</b>.</li>
+<li>Copy <code>Alexa02-2.3.0-mac-arm64.vcvplugin</code> into your Rack plugins folder: <code>~/Library/Application Support/Rack2/plugins-mac-arm64/</code>.</li>
+<li>Restart Rack. Alexa02 and Alexa01 are under the brand <b>Haer</b>.</li>
 </ol>
 
 <h2 id="first">First sound</h2>
@@ -60,7 +60,7 @@ img.panel{width:100%;display:block;margin:16px auto;border-radius:6px}
 <li>Patch <b>MIX L</b> and <b>MIX R</b> to your audio interface.</li>
 <li>No sequencer to hand? Press <b>PLAY</b>. It fires whichever voice is selected.</li>
 </ol>
-<p>A fresh module starts with the firmware's own init kit in A and in B. Right-click the panel and choose <b>Load factory kit into A</b> or <b>into B</b> to start from something more characterful.</p>
+<p>A fresh module starts with the firmware's own init kit in A and in B. Click the screen and choose <b>Load factory kit into A</b> or <b>into B</b> to start from something more characterful.</p>
 
 <h2 id="panel">Panel tour</h2>
 <h3>The six voices</h3>
@@ -123,14 +123,14 @@ img.panel{width:100%;display:block;margin:16px auto;border-radius:6px}
 <li>Patch a slow LFO into DRUM 1's MORPH to make only the kick drift between its A and B versions.</li>
 <li>Patch a random voltage, sampled on each hit, into the HAT's MORPH so every hat is slightly different.</li>
 </ul>
-<p>A few things don't morph, as on the hardware: the mod matrix, the voice routing and the FX type.</p>
+<p>Three things can't be blended: the mod matrix, each voice's routing (mix or FX) and the FX type. They stay on kit A until the morph reaches 99%, then switch to kit B. At 100% you hear kit B and nothing else, so loading a new kit into A changes nothing until you turn the morph back. (The hardware keeps these three on kit A all the way.)</p>
 <div class="card">
 <h3>A quick way to get a B kit</h3>
-<p>Load a kit into A, then right-click and choose <b>Mutate all voices into B</b>, with A little, Some or A lot. Now the MORPH knob sweeps from your kit into a variation of it. For one voice only, select it and press MUTATE.</p>
+<p>Load a kit into A, then click the screen and choose <b>Mutate all voices into B</b>, with A little, Some or A lot. Now the MORPH knob sweeps from your kit into a variation of it. For one voice only, select it and press MUTATE.</p>
 </div>
 
 <h2 id="kits">Kits</h2>
-<p>The right-click menu has six factory kits plus the firmware's init kit. Load any of them into A or B.</p>
+<p>Click the screen to open the kit menu. It has six factory kits plus the firmware's init kit. Load any of them into A or B.</p>
 <div class="wrap"><table>
 <tr><th>Kit</th><th>Character</th></tr>
 <tr><td>Boom</td><td>Long sine kick and soft toms.</td></tr>
@@ -156,6 +156,26 @@ img.panel{width:100%;display:block;margin:16px auto;border-radius:6px}
 <li>LFO Hat to Hat AMP CLOSED makes the hat decay breathe.</li>
 <li>CV 2 to MORPH gives the matrix control of the kit morph. While a slot targets MORPH, it takes over from the knob.</li>
 </ul>
+
+
+<h2 id="alexa01">Alexa01: one voice, every knob</h2>
+<img class="panel" alt="Alexa01 panel" src="PANEL01_PNG">
+<p>Alexa01 is a single Alexa02 voice on its own panel. Every setting of the voice has its own knob, so there are no pages to step through. It has the same engine, so it sounds exactly like the matching voice in Alexa02.</p>
+<div class="wrap"><table>
+<tr><th>Control</th><th>What it does</th></tr>
+<tr><td><b>DRUM / SNARE / CYMBAL / HAT</b></td><td>Chooses the voice type. Each type keeps its own knob settings, so you can flip between types and back without losing anything. Knobs a type doesn't use are greyed out: NOISE and MIX belong to the snare, OPEN to the hat, REPEAT to the snare and cymbal, the PITCH row to drum and snare, TUNE 3, FM 3 and WAVE 3 to the cymbal and hat, and FM/MIX to the drum.</td></tr>
+<tr><td><b>Knob rows</b></td><td>OSC, AMP, PITCH, CLICK, FM, FILTER and MIX: the same settings as the pages on Alexa02. On the drum, TUNE 2, FM 2 and WAVE 2 are the FM modulator's tune, amount and wave.</td></tr>
+<tr><td><b>1 to 6</b></td><td>Six memories. Pressing one makes it the morph target, which shows as an outline on the screen. A memory that holds a sound glows dimly.</td></tr>
+<tr><td><b>STORE</b>, then a memory</td><td>Saves the knobs, and the voice type, into that memory.</td></tr>
+<tr><td><b>RECALL</b>, then a memory</td><td>Loads that memory back onto the knobs. Press STORE or RECALL again to cancel.</td></tr>
+<tr><td><b>MUTATE</b></td><td>Puts a variation of the knobs into the chosen memory. Set how far it strays in the screen menu.</td></tr>
+<tr><td><b>PLAY</b></td><td>Fires the voice.</td></tr>
+<tr><td><b>MORPH</b>, <b>CV</b> trimmer and jack</td><td>The morph position, with an attenuverter for the CV jack.</td></tr>
+<tr><td><b>MEM / SCAN</b> switch</td><td><b>MEM:</b> MORPH blends from the knobs (left) to the chosen memory (right). <b>SCAN:</b> MORPH travels from the knobs through every stored memory in order, 1 to 6, skipping empty ones. In both modes, fully right is exactly the last sound.</td></tr>
+<tr><td><b>TRIG, OPEN, ACC, V/OCT, OUT</b></td><td>As on Alexa02. OPEN is the open hat when the type is HAT; for other types it plays the voice like TRIG.</td></tr>
+</table></div>
+<p>Click the screen for the menu. It can load any voice from a factory kit or an LXR <code>.snd</code> file onto the knobs, save the voice as a <code>.snd</code> kit, reset the knobs, set the mutate amount, fill all six memories with variations, and clear memories.</p>
+<p class="note">A memory remembers its voice type. If you morph to a memory stored from a different type, the knob positions are used on the current type, which can give unexpected sounds. Recall it instead to switch type.</p>
 
 <h2 id="patches">Starter patches</h2>
 <div class="card">
