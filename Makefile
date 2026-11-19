@@ -24,3 +24,9 @@ test:
 	mkdir -p build/test
 	$(CC) -std=gnu11 -O2 -Isrc/lxr/port -Isrc/lxr/Inc $(LXR_SOURCES) test/engine_test.c -lm -o build/test/engine_test
 	build/test/engine_test build/test
+	mkdir -p build/test/lxrobj
+	for f in $(LXR_SOURCES); do $(CC) -std=gnu11 -O2 -w -c -Isrc/lxr/port -Isrc/lxr/Inc $$f -o build/test/lxrobj/$$(echo $$f | tr / _).o || exit 1; done
+	$(CXX) -std=c++17 -O1 -Isrc/lxr/port test/morph_test.cpp build/test/lxrobj/*.o -o build/test/morph_test
+	build/test/morph_test
+	$(CXX) -std=c++17 -O1 -Isrc/lxr/port test/alexa01_test.cpp build/test/lxrobj/*.o -o build/test/alexa01_test
+	build/test/alexa01_test

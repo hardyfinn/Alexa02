@@ -5,6 +5,7 @@ Six drum voices from the open-source LXR-02 sound engine, as a VCV Rack module. 
 - The engine is the sound engine from the Erica Synths LXR-02 Eurorack firmware, compiled unchanged apart from the few marked portability fixes.
 - Kits from the hardware (`.snd` files) load and save.
 - Six factory kits are included, plus the firmware's init kit.
+- **Alexa01** is one voice (drum, snare, cymbal or hat) with every setting on its own knob, six memories, and morphing from the knobs to a memory or through all six.
 
 This is an unofficial port and is not affiliated with or endorsed by Erica Synths. It is licensed GPL-3.0-only with the additional terms in [NOTICE.md](NOTICE.md). Files changed from the firmware are marked "Alexa02 port".
 
@@ -20,3 +21,4 @@ GitHub Actions builds the mac-arm64 plugin and publishes it to the `latest` rele
     python3 tools/gen_meta.py       # src/ParamMeta.hpp from the firmware headers
     python3 tools/make_kits.py      # src/FactoryKits.hpp from tools/kits.py
     python3 tools/make_panel.py     # res/Alexa02.svg and src/Layout.hpp (needs fonttools)
+    python3 tools/make_panel_alexa01.py  # res/Alexa01.svg and src/Layout01.hpp
